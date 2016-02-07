@@ -65,10 +65,10 @@ func daily(logger chan string) {
 
 func readHourly() (hourlySlice []string){
 	hourly, _ := ioutil.ReadDir("/data/hourly/")
-    for _, f := range hourly {
-    	hourlySlice = append(hourlySlice, "/data/hourly/" + f.Name())
-    }
-    return
+	for _, f := range hourly {
+		hourlySlice = append(hourlySlice, "/data/hourly/" + f.Name())
+	}
+	return
 }
 
 func readDaily() (dailySlice []string){
@@ -87,11 +87,11 @@ func execScripts(scripts []string, logger chan string) {
 		go func() {
 
 			out, err := exec.Command("/bin/bash", t).Output()
-		    if err != nil {
-		        logger <- t + " - " + err.Error()
-		    }
+			if err != nil {
+				logger <- t + " - " + err.Error()
+			}
 
-		    logger <- ("output>> " + string(out) + " <<\n")
+			logger <- ("output>> " + string(out) + " <<\n")
 			logger <- "executed " + t
 
 			defer wg.Done()
