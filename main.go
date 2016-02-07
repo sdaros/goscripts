@@ -29,35 +29,38 @@ func main() {
 
 	fmt.Println("Started")
 
-	go func() {
-		for {
-			hourly := readHourly()
-			execScripts(hourly, logger)
-
-			then := time.Now()
-			var t = then.Minute()*60 + then.Second()
-			sleepTime := time.Hour - time.Duration(t)*time.Second
-			logger <- "Sleep for " + sleepTime.String()
-			time.Sleep(sleepTime)
-		}
-	}()
-
-	go func() {
-		for {
-			daily := readDaily()
-			execScripts(daily, logger)
-
-			then := time.Now()
-			var t = then.Hour()*3600 + then.Minute()*60 + then.Second()
-			sleepTime := time.Hour*24 - time.Duration(t)*time.Second
-			logger <- "Sleep for " + sleepTime.String()
-			time.Sleep(sleepTime)	
-		}
-	}()
+	go hourly(logger)
+	go daily(logger)
 
 	time.Sleep(time.Second*10)
 
 	select{}
+}
+
+func hourly(logger chan string) {
+	for {
+		hourly := readHourly()
+		execScripts(hourly, logger)
+
+		then := time.Now()
+		var t = then.Minute()*60 + then.Second()
+		sleepTime := time.Hour - time.Duration(t)*time.Second
+		logger <- "Sleep for " + sleepTime.String()
+		time.Sleep(sleepTime)
+	}
+}
+
+func daily(logger chan string) {
+	for {
+		daily := readDaily()
+		execScripts(daily, logger)
+
+		then := time.Now()
+		var t = then.Hour()*3600 + then.Minute()*60 + then.Second()
+		sleepTime := time.Hour*24 - time.Duration(t)*time.Second
+		logger <- "Sleep for " + sleepTime.String()
+		time.Sleep(sleepTime)	
+	}
 }
 
 func readHourly() (hourlySlice []string){
@@ -87,8 +90,10 @@ func execScripts(scripts []string, logger chan string) {
 		    if err != nil {
 		        logger <- t + " - " + err.Error()
 		    }
+
 		    logger <- ("output>> " + string(out) + " <<\n")
 			logger <- "executed " + t
+
 			defer wg.Done()
 		}()
 	}
