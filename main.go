@@ -32,8 +32,6 @@ func main() {
 	go hourly(logger)
 	go daily(logger)
 
-	time.Sleep(time.Second*10)
-
 	select{}
 }
 
