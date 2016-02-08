@@ -1,6 +1,6 @@
 FROM golang
 
-ADD main.go /go/src/goscripts/main.go
+ADD goscripts.go /go/src/goscripts/goscripts.go
 
 RUN go get goscripts
 
